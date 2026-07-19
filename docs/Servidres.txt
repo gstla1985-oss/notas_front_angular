@@ -1,0 +1,9 @@
+github actions - cuenta usada para front
+--------------------------------------------
+render cuenta usada:
+
+
+-------------------------------------------------------------
+neon database . datos coneccion
+---------------------------------
+resend datos de coneccion
