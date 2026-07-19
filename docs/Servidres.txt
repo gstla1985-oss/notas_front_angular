@@ -5,5 +5,26 @@ render cuenta usada:
 
 -------------------------------------------------------------
 neon database . datos coneccion
+postgresql://neondb_owner:npg_ewKR8QPNCD4Y@ep-noisy-wind-auvjlq6g-pooler.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+
+
 ---------------------------------
-resend datos de coneccion
+resend datos de coneccion (api key)
+re_VNzZtd3i_8DLwFpsMESwbT1T8L3jBhtnc
+
+ejemplo envio resend:
+import com.resend.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Resend resend = new Resend("re_VNzZtd3i_8DLwFpsMESwbT1T8L3jBhtnc");
+
+        SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
+                .from("onboarding@resend.dev")
+                .to("gstla1985@gmail.com")
+                .subject("Hello World")
+                .html("<p>Congrats on sending your <strong>first email</strong>!</p>")
+                .build();
+
+        SendEmailResponse data = resend.emails().send(sendEmailRequest);
+    }

@@ -1,3 +1,375 @@
+
+# PARTE I — APP DE NOTAS (BASE PROFESIONAL)
+
+## Objetivo general
+
+Construir una aplicación web de notas tipo chat con una arquitectura sólida, escalable y preparada para futuras expansiones como:
+
+* sincronización entre dispositivos
+* aplicación mobile
+* manejo de archivos
+* múltiples usuarios
+* múltiples temas visuales
+* internacionalización
+
+Sin implementar todavía:
+
+* sincronización real
+* versión mobile
+* adjuntos funcionales
+* WebSockets
+* Kafka
+* Kubernetes
+
+La meta principal es crear una base limpia y profesional.
+
+---
+
+# Stack Tecnológico
+
+## Frontend
+
+### Angular
+
+Se utilizará Angular como framework principal del frontend.
+
+### TailwindCSS
+
+Se utilizará Tailwind para:
+
+* diseño rápido
+* consistencia visual
+* soporte de temas
+* escalabilidad UI
+* componentes reutilizables
+
+---
+
+## Backend
+
+### Spring Boot
+
+Se utilizará Spring Boot como base del backend.
+
+### Librerías principales
+
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* JWT Authentication
+* Validation
+* Lombok
+* PostgreSQL
+* Flyway o Liquibase (opcional)
+
+---
+
+# Filosofía del proyecto
+
+La aplicación debe:
+
+* ser simple de usar
+* tener una arquitectura limpia
+* permitir crecer sin romperse
+* evitar sobreingeniería
+* priorizar mantenibilidad
+
+La base de datos quedará preparada desde el inicio para:
+
+* múltiples dispositivos
+* sincronización futura
+* soft delete
+* versionado
+* archivos adjuntos
+
+Aunque dichas funcionalidades NO serán implementadas todavía.
+
+---
+
+# Arquitectura Frontend
+
+## Principios
+
+* Atomic Design
+* Separación por features
+* Componentes reutilizables
+* Servicios desacoplados
+* Uso correcto de estados locales
+* Tipado fuerte con TypeScript
+
+---
+
+# Estructura Frontend Sugerida
+
+```txt
+src/
+ ├── app/
+ │    ├── core/
+ │    ├── shared/
+ │    ├── features/
+ │    ├── layouts/
+ │    ├── pages/
+ │    ├── services/
+ │    ├── interceptors/
+ │    ├── guards/
+ │    └── models/
+```
+
+---
+
+# Atomic Design
+
+## Átomos
+
+Componentes básicos reutilizables:
+
+* botones
+* inputs
+* textarea
+* iconos
+* badges
+* loaders
+
+---
+
+## Moléculas
+
+Combinaciones simples:
+
+* barra de búsqueda
+* tarjeta de nota
+* item sidebar
+* inputs con label
+
+---
+
+## Organismos
+
+Componentes grandes:
+
+* sidebar de notas
+* contenedor de conversación
+* formulario login
+* formulario registro
+
+---
+
+# Temas Visuales
+
+La aplicación soportará múltiples temas visuales desde el inicio.
+
+Ejemplos:
+
+* Ruby Cherry
+* Amatista
+* Safiro
+* Topazio
+* Esmeralda
+
+---
+
+# Sistema de temas
+
+Se recomienda:
+
+* variables CSS
+* configuración centralizada
+* clases dinámicas
+* soporte dark/light futuro
+
+---
+
+# Pantallas Iniciales
+
+## Login
+
+Características:
+
+* email
+* contraseña
+* recordar sesión
+* login con Google (futuro)
+* diseño responsive
+
+---
+
+## Registro
+
+Características:
+
+* nombre
+* email
+* contraseña
+* confirmar contraseña
+* validaciones
+
+---
+
+## Home
+
+Estructura:
+
+* sidebar de conversaciones
+* buscador
+* contenedor principal de notas
+* input inferior tipo chat
+* soporte responsive
+
+---
+
+## Notas tipo Chat
+
+Las notas se visualizarán como mensajes.
+
+La idea futura es permitir:
+
+* texto
+* imágenes
+* archivos
+* elementos intercalados
+
+Por eso el modelo de datos ya considera adjuntos.
+
+---
+
+# Backend — Arquitectura
+
+## Arquitectura limpia
+
+Capas:
+
+```txt
+controller
+service
+repository
+dto
+entity
+mapper
+security
+config
+```
+
+---
+
+# Buenas prácticas backend
+
+## Recomendaciones
+
+* DTOs separados de entidades
+* validaciones con annotations
+* manejo global de errores
+* uso de UUID
+* uso de timestamps
+* soft delete
+* versionado
+* separación clara de responsabilidades
+
+---
+
+# Seguridad
+
+## Spring Security
+
+Implementar:
+
+* JWT
+* autenticación
+* autorización
+* roles
+* permisos
+* endpoints protegidos
+
+---
+
+# Base de Datos
+
+## Objetivo
+
+Aunque inicialmente la app será simple, la base de datos quedará preparada para:
+
+* sincronización futura
+* múltiples dispositivos
+* manejo de adjuntos
+* expansión mobile
+
+---
+
+# Características importantes de la DB
+
+## UUID
+
+Todas las tablas principales usarán UUID.
+
+Beneficios:
+
+* evita colisiones
+* compatible con sync futura
+* compatible multi dispositivo
+
+---
+
+## Timestamps
+
+Campos:
+
+* creado_en
+* actualizado_en
+* eliminado_en
+* ultima_modificacion
+
+Beneficios:
+
+* auditoría
+* sincronización futura
+* consistencia
+
+---
+
+## Soft Delete
+
+Uso de:
+
+```txt
+eliminado_en
+```
+
+Beneficios:
+
+* recuperación de datos
+* sync futura
+* seguridad
+
+---
+
+## Versionado
+
+Uso de:
+
+```txt
+version
+```
+
+Beneficios:
+
+* control de concurrencia
+* sincronización futura
+* consistencia entre dispositivos
+
+---
+
+# Modelo de Datos
+
+El modelo incluye:
+
+* usuarios
+* roles
+* permisos
+* categorías
+* idiomas
+* notas
+* adjuntos
+
+Aunque los adjuntos todavía NO serán implementados funcionalmente.
 erDiagram
     %% ==========================================
     %% 1. ECOSISTEMA Y CONFIGURACIÓN
