@@ -420,6 +420,7 @@ export class RegisterComponent {
   private readonly router = inject(Router);
 
   goToHome(): void {
-    this.router.navigate(['/home']);
+    // Aquí iría el llamado HTTP al backend para registrar
+    this.router.navigate(['/verify-otp']);
   }
 }

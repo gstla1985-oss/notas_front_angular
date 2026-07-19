@@ -86,7 +86,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
               <input type="checkbox" />
               <span>Recordarme</span>
             </label>
-            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+            <a routerLink="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
           </div>
 
           <!-- Login Button -->
