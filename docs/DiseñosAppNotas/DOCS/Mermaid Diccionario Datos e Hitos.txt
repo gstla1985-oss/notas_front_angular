@@ -1,0 +1,236 @@
+erDiagram
+    %% ==========================================
+    %% 1. ECOSISTEMA Y CONFIGURACIÓN
+    %% ==========================================
+    subscriptions { int id PK string name decimal price }
+    countries { int id PK string name string iso_code }
+    languages { int id PK string name string code }
+    roles { int id PK string name }
+
+    %% ==========================================
+    %% 2. GESTIÓN DE USUARIOS Y SESIONES
+    %% ==========================================
+    users {
+        uuid id PK
+        string email
+        string password_hash
+        int subscription_id FK
+        int role_id FK
+        int country_id FK
+        int language_id FK
+        string theme_name
+        timestamp created_at
+    }
+    devices { uuid id PK string name string platform }
+    users_devices { uuid user_id FK uuid device_id FK timestamp last_synced_at }
+
+    %% ==========================================
+    %% 3. ESTRUCTURAS, COMPORTAMIENTOS Y PROPIEDADES
+    %% ==========================================
+    category_layouts {
+        int id PK
+        string code "list, excel, calendar"
+        string description "Layout visual de la categoría"
+    }
+    note_types {
+        int id PK
+        string code "text, checklist"
+        string description "Estructura de la nota individual"
+    }
+    time_behaviors {
+        int id PK
+        string code "none, log, reminder"
+        string description "Comportamiento temporal"
+    }
+    properties {
+        int id PK
+        string code "is_pinned, is_encrypted, is_temporary"
+    }
+
+    %% ==========================================
+    %% 4. EXPANSIÓN: PLANTILLAS Y CAMPOS DINÁMICOS
+    %% ==========================================
+    category_templates {
+        int id PK
+        int category_layout_id FK
+        string name "Ej: Arriendos, Restaurantes"
+    }
+    template_custom_fields {
+        int id PK
+        int template_id FK
+        string name "Ej: Precio, Puntuación"
+        string field_type "text, number, boolean, select"
+    }
+    custom_fields {
+        uuid id PK
+        int category_id FK
+        string name "Nombre de la columna"
+        string field_type "text, number, boolean, select"
+        int display_order
+    }
+    custom_field_options {
+        int id PK
+        uuid custom_field_id FK
+        string value "Opciones del select"
+    }
+    note_custom_values {
+        uuid id PK
+        uuid note_id FK
+        uuid custom_field_id FK
+        string value_text
+        decimal value_number
+        boolean value_boolean
+    }
+
+    %% ==========================================
+    %% 5. NEGOCIO PRINCIPAL
+    %% ==========================================
+    categories {
+        int id PK
+        uuid user_id FK
+        int category_layout_id FK
+        int template_id FK
+        string name
+        string color
+    }
+    notes {
+        uuid id PK
+        uuid user_id FK
+        int category_id FK
+        int note_type_id FK
+        int time_behavior_id FK
+        string title
+        text body
+        timestamp event_date
+        timestamp reminder_at
+        timestamp created_at
+    }
+
+    %% ==========================================
+    %% 6. INTERMEDIAS Y ARCHIVOS
+    %% ==========================================
+    note_has_properties { uuid note_id FK int property_id FK boolean value }
+    category_has_properties { int category_id FK int property_id FK boolean value }
+    attachment_types { int id PK string name }
+    attachments { uuid id PK uuid note_id FK int type_id FK string file_url }
+
+    %% ==========================================
+    %% RELACIONES
+    %% ==========================================
+    %% Ecosistema
+    subscriptions ||--o{ users : "plan"
+    countries ||--o{ users : "reside_en"
+    languages ||--o{ users : "prefiere_idioma"
+    roles ||--o{ users : "tiene_permisos"
+    
+    %% Usuarios y Sesiones
+    users ||--|{ users_devices : "sesion"
+    devices ||--|{ users_devices : "aparato"
+    users ||--o{ categories : "crea"
+    users ||--o{ notes : "escribe"
+    
+    %% Negocio Principal y Estructuras
+    categories ||--o{ notes : "agrupa"
+    category_layouts ||--o{ categories : "renderiza"
+    note_types ||--o{ notes : "define_tipo"
+    time_behaviors ||--o{ notes : "define_tiempo"
+    
+    %% Plantillas y Campos Dinámicos
+    category_layouts ||--o{ category_templates : "restringe"
+    category_templates ||--o{ template_custom_fields : "molde"
+    categories ||--o{ custom_fields : "tiene_columnas"
+    custom_fields ||--o{ custom_field_options : "tiene_opciones"
+    custom_fields ||--o{ note_custom_values : "llenado_por"
+    notes ||--o{ note_custom_values : "tiene_datos"
+    
+    %% Propiedades e Intermedias
+    properties ||--o{ note_has_properties : "aplica_nota"
+    properties ||--o{ category_has_properties : "aplica_cat"
+    
+    %% Archivos
+    notes ||--o{ attachments : "adjunta"
+    attachment_types ||--o{ attachments : "clasifica_formato"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Diccionario de Datos
+1. Ecosistema y Configuración
+•	subscriptions: Define los planes (Gratis, Premium) y límites.
+•	countries / languages / roles: Tablas de referencia global para localización y permisos.
+2. Usuarios y Sesiones
+•	users: Tabla maestra del usuario (credenciales y preferencias).
+•	devices / users_devices: Control de acceso, sesiones activas y sincronización entre dispositivos.
+3. Negocio Principal (Lo básico)
+•	categories: El contenedor raíz. Conectado a un category_layout y, opcionalmente, a una template.
+•	notes: La unidad básica de información. Puede vivir en una categoría o estar suelta. Conectada a su note_type y time_behavior.
+4. Estructuras y Comportamientos (El Cerebro)
+•	category_layouts: Define si una categoría es list (notas), excel (tablas) o calendar. (el calendar interactua con los “time_behavior” para tener claro lo realizado y lo ha realizar, los logs deberían ser de un color diferente a las notas)
+•	note_types: Define si el contenido es text o checklist. (o pueden ser otros tipos, claro que si es “checklist” tiene que tener un titulo que lo contenga un contenedor, quizás haga falta otra tabla…)
+•	time_behaviors: Define la lógica temporal (none, log, reminder).
+•	properties: Registro maestro de flags (is_pinned, is_temporal, is_encripted etc).
+5. Propiedades e Intermedias
+•	note_has_properties / category_has_properties: Tablas que permiten asignar atributos booleanos (pineado, encriptado) de forma dinámica.
+6. Archivos Adjuntos
+•	attachment_types: Catálogo de formatos (imagen, doc, etc).
+•	attachments: Registro de archivos con URL hacia el almacenamiento en la nube, vinculado a una nota específica.
+7. Expansión: Plantillas y Campos Dinámicos
+•	category_templates: "Moldes" preconfigurados (ej. "Restaurantes", “Arriendos”).
+•	template_custom_fields: Las columnas que componen el molde (ej. "Calificación").
+•	custom_fields: Cuando un usuario usa una plantilla, sus columnas se copian aquí. Esto permite que el usuario luego agregue sus propias columnas sin romper la plantilla original.
+•	custom_field_options: Opciones para campos tipo select (ej. "Malo", "Bueno").
+•	note_custom_values: La tabla donde reside el dato real (la celda). Cruza la nota (fila) con el campo (columna).
+📓 Documento de Proyecto: App de Notas y Gestión Estructurada (MVP)
+🌟 Visión General
+Una aplicación de gestión de información diseñada bajo la filosofía de "Contenedor (Categorías) y Contenido (Notas)". El proyecto está pensado para escalar hacia vistas complejas (Tablas, Calendarios, Formularios), pero su núcleo (MVP) se enfoca en una experiencia de toma de notas rápida, sincronizada y ultra confiable.
+⚙️ Arquitectura de Sincronización y Carga (El Motor)
+Para garantizar una experiencia fluida tanto online como offline, el sistema se rige por las siguientes reglas técnicas:
+•	Soft Deletes (Borrado Lógico): Los registros no se borran físicamente de la base de datos de inmediato. Se implementa un campo deleted_at. Esto permite que un dispositivo offline "sepa" qué se eliminó cuando recupere la conexión.
+•	Resolución de Conflictos (Last Write Wins): Si hay una edición cruzada entre la Web y el celular estando offline, prevalecerá la nota con la fecha más reciente en su campo updated_at.
+•	Carga Perezosa (Lazy Loading): Para mantener la app ligera sin importar cuántos años de notas tenga el usuario, al iniciar sesión solo se descargan las Categorías (carpetas). Las notas se cargan progresivamente mediante paginación a medida que el usuario hace scroll o entra a una categoría específica.
+•	Control de Sincronización: Aunque la app intenta sincronizar en momentos clave (al crear, editar, eliminar o iniciar sesión), la interfaz siempre contará con un Botón de Sincronización Manual para darle control y tranquilidad al usuario.
+🚩 Hito 0: Ecosistema, Preferencias y Seguridad
+Este hito sienta las bases de la infraestructura de usuarios. No hay notas todavía, solo el "terreno" preparado y sincronizado.
+Objetivos del Hito 0:
+•	Gestión de Accesos: Sistema de Login y Registro (vinculado a la tabla users y registro de sesiones en users_devices).
+•	Sincronización de Preferencias (Consistencia Global): Las preferencias del usuario se guardan en la base de datos y se replican en todos sus dispositivos. Si el usuario selecciona el tema "Blueberry" en la Web, su app móvil cambiará a "Blueberry" automáticamente al sincronizar. (Temas estéticos contemplados: Zafiro, Blueberry, Ruby Frutilla, etc.).
+•	Idiomas y Región: Selección de idioma y país vinculada al perfil del usuario.
+•	Suscripciones Básicas: Estructura preparada para diferenciar usuarios "Gratis" vs "Premium".
+•	Respaldo de Seguridad (JSON Backup): Funcionalidad crítica. Un botón que compila toda la información del usuario en un archivo .json y se lo envía a su correo electrónico registrado.
+🚩 Hito 1: El Core (Categorías y Notas)
+Este es el producto funcional básico. Una vez terminado, la app ya es perfectamente utilizable para el día a día. Se implementa la interfaz visual y la lógica CRUD (Crear, Leer, Actualizar, Borrar).
+1. El Buzón de Entrada (Inbox / General)
+•	Para garantizar la velocidad en la creación, los usuarios pueden crear notas sin asignarles una categoría (en la base de datos, category_id es null).
+•	Estas notas "huérfanas" se visualizarán en una sección especial llamada "General / Sin clasificar".
+•	Esto hace que la app sea extremadamente cómoda para capturar ideas rápidas y ordenarlas después.
+2. Gestión de Categorías
+•	Creación y Edición: Los usuarios pueden crear carpetas personalizadas (con nombre y color). En este hito, todas usarán el category_layout básico (Vista de Lista).
+•	Eliminación: Al eliminar una categoría, se debe preguntar al usuario si desea eliminar también las notas que contiene o enviarlas a "General/Sin clasificar".
+3. Gestión de Notas (El 90% del uso de la app)
+•	Tipos de Contenido: Implementación de los note_types básicos: Texto plano/enriquecido y Checklist.
+•	Acciones Base: Crear, editar y eliminar (con soft-delete para la sincronización).
+•	Movilidad y Duplicación:
+o	Mover: Cambiar el category_id de una nota para trasladarla de "General" a "Hospedajes", por ejemplo.
+o	Duplicar: Crear un registro completamente nuevo (con un nuevo UUID y created_at actual) clonando el title y body de una nota existente. Ideal para usar notas viejas como "plantillas" informales.
+Criterio de Éxito del Hito 1
+El Hito 1 se considerará completado únicamente cuando un usuario pueda crear una nota en su celular sin internet, luego conectarse, presionar el botón de "Sincronizar", y ver esa misma nota aparecer en la aplicación Web (y viceversa). La estabilidad de la sincronización es la prioridad número uno.
+
+

@@ -1,0 +1,547 @@
+# PARTE I — APP DE NOTAS (BASE PROFESIONAL)
+
+## Objetivo general
+
+Construir una aplicación web de notas tipo chat con una arquitectura sólida, escalable y preparada para futuras expansiones como:
+
+* sincronización entre dispositivos
+* aplicación mobile
+* manejo de archivos
+* múltiples usuarios
+* múltiples temas visuales
+* internacionalización
+
+Sin implementar todavía:
+
+* sincronización real
+* versión mobile
+* adjuntos funcionales
+* WebSockets
+* Kafka
+* Kubernetes
+
+La meta principal es crear una base limpia y profesional.
+
+---
+
+# Stack Tecnológico
+
+## Frontend
+
+### Angular
+
+Se utilizará Angular como framework principal del frontend.
+
+### TailwindCSS
+
+Se utilizará Tailwind para:
+
+* diseño rápido
+* consistencia visual
+* soporte de temas
+* escalabilidad UI
+* componentes reutilizables
+
+---
+
+## Backend
+
+### Spring Boot
+
+Se utilizará Spring Boot como base del backend.
+
+### Librerías principales
+
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* JWT Authentication
+* Validation
+* Lombok
+* PostgreSQL
+* Flyway o Liquibase (opcional)
+
+---
+
+# Filosofía del proyecto
+
+La aplicación debe:
+
+* ser simple de usar
+* tener una arquitectura limpia
+* permitir crecer sin romperse
+* evitar sobreingeniería
+* priorizar mantenibilidad
+
+La base de datos quedará preparada desde el inicio para:
+
+* múltiples dispositivos
+* sincronización futura
+* soft delete
+* versionado
+* archivos adjuntos
+
+Aunque dichas funcionalidades NO serán implementadas todavía.
+
+---
+
+# Arquitectura Frontend
+
+## Principios
+
+* Atomic Design
+* Separación por features
+* Componentes reutilizables
+* Servicios desacoplados
+* Uso correcto de estados locales
+* Tipado fuerte con TypeScript
+
+---
+
+# Estructura Frontend Sugerida
+
+```txt
+src/
+ ├── app/
+ │    ├── core/
+ │    ├── shared/
+ │    ├── features/
+ │    ├── layouts/
+ │    ├── pages/
+ │    ├── services/
+ │    ├── interceptors/
+ │    ├── guards/
+ │    └── models/
+```
+
+---
+
+# Atomic Design
+
+## Átomos
+
+Componentes básicos reutilizables:
+
+* botones
+* inputs
+* textarea
+* iconos
+* badges
+* loaders
+
+---
+
+## Moléculas
+
+Combinaciones simples:
+
+* barra de búsqueda
+* tarjeta de nota
+* item sidebar
+* inputs con label
+
+---
+
+## Organismos
+
+Componentes grandes:
+
+* sidebar de notas
+* contenedor de conversación
+* formulario login
+* formulario registro
+
+---
+
+# Temas Visuales
+
+La aplicación soportará múltiples temas visuales desde el inicio.
+
+Ejemplos:
+
+* Ruby Cherry
+* Amatista
+* Safiro
+* Topazio
+* Esmeralda
+
+---
+
+# Sistema de temas
+
+Se recomienda:
+
+* variables CSS
+* configuración centralizada
+* clases dinámicas
+* soporte dark/light futuro
+
+---
+
+# Pantallas Iniciales
+
+## Login
+
+Características:
+
+* email
+* contraseña
+* recordar sesión
+* login con Google (futuro)
+* diseño responsive
+
+---
+
+## Registro
+
+Características:
+
+* nombre
+* email
+* contraseña
+* confirmar contraseña
+* validaciones
+
+---
+
+## Home
+
+Estructura:
+
+* sidebar de conversaciones
+* buscador
+* contenedor principal de notas
+* input inferior tipo chat
+* soporte responsive
+
+---
+
+## Notas tipo Chat
+
+Las notas se visualizarán como mensajes.
+
+La idea futura es permitir:
+
+* texto
+* imágenes
+* archivos
+* elementos intercalados
+
+Por eso el modelo de datos ya considera adjuntos.
+
+---
+
+# Backend — Arquitectura
+
+## Arquitectura limpia
+
+Capas:
+
+```txt
+controller
+service
+repository
+dto
+entity
+mapper
+security
+config
+```
+
+---
+
+# Buenas prácticas backend
+
+## Recomendaciones
+
+* DTOs separados de entidades
+* validaciones con annotations
+* manejo global de errores
+* uso de UUID
+* uso de timestamps
+* soft delete
+* versionado
+* separación clara de responsabilidades
+
+---
+
+# Seguridad
+
+## Spring Security
+
+Implementar:
+
+* JWT
+* autenticación
+* autorización
+* roles
+* permisos
+* endpoints protegidos
+
+---
+
+# Base de Datos
+
+## Objetivo
+
+Aunque inicialmente la app será simple, la base de datos quedará preparada para:
+
+* sincronización futura
+* múltiples dispositivos
+* manejo de adjuntos
+* expansión mobile
+
+---
+
+# Características importantes de la DB
+
+## UUID
+
+Todas las tablas principales usarán UUID.
+
+Beneficios:
+
+* evita colisiones
+* compatible con sync futura
+* compatible multi dispositivo
+
+---
+
+## Timestamps
+
+Campos:
+
+* creado_en
+* actualizado_en
+* eliminado_en
+* ultima_modificacion
+
+Beneficios:
+
+* auditoría
+* sincronización futura
+* consistencia
+
+---
+
+## Soft Delete
+
+Uso de:
+
+```txt
+eliminado_en
+```
+
+Beneficios:
+
+* recuperación de datos
+* sync futura
+* seguridad
+
+---
+
+## Versionado
+
+Uso de:
+
+```txt
+version
+```
+
+Beneficios:
+
+* control de concurrencia
+* sincronización futura
+* consistencia entre dispositivos
+
+---
+
+# Modelo de Datos
+
+El modelo incluye:
+
+* usuarios
+* roles
+* permisos
+* categorías
+* idiomas
+* notas
+* adjuntos
+
+Aunque los adjuntos todavía NO serán implementados funcionalmente.
+
+---
+
+# Modelo Mermaid
+
+```mermaid
+erDiagram
+
+    USUARIO ||--o{ NOTA : posee
+    USUARIO ||--o{ CATEGORIA : crea
+    USUARIO ||--o{ USUARIO_ROL : tiene
+
+    ROL ||--o{ USUARIO_ROL : asignado
+    ROL ||--o{ ROL_PERMISO : tiene
+
+    PERMISO ||--o{ ROL_PERMISO : asignado
+
+    CATEGORIA ||--o{ NOTA : agrupa
+    IDIOMA ||--o{ NOTA : define
+    NOTA ||--o{ ADJUNTO : contiene
+
+
+    USUARIO {
+        uuid id
+        string email
+        string password
+
+        datetime creado_en
+        datetime actualizado_en
+        datetime eliminado_en
+    }
+
+
+    ROL {
+        uuid id
+        string nombre
+    }
+
+
+    PERMISO {
+        uuid id
+        string nombre
+    }
+
+
+    USUARIO_ROL {
+        uuid usuario_id
+        uuid rol_id
+    }
+
+
+    ROL_PERMISO {
+        uuid rol_id
+        uuid permiso_id
+    }
+
+
+    CATEGORIA {
+        uuid id
+
+        string nombre
+        string color
+
+        uuid usuario_id
+
+        datetime creado_en
+        datetime actualizado_en
+    }
+
+
+    IDIOMA {
+        uuid id
+
+        string codigo
+        string nombre
+    }
+
+
+    NOTA {
+        uuid id
+
+        uuid usuario_id
+        uuid categoria_id
+        uuid idioma_id
+
+        text contenido
+
+        int version
+
+        datetime creado_en
+        datetime actualizado_en
+        datetime eliminado_en
+        datetime ultima_modificacion
+    }
+
+
+    ADJUNTO {
+        uuid id
+
+        uuid nota_id
+
+        string nombre_archivo
+        string tipo_archivo
+        string url_archivo
+
+        int orden
+
+        datetime creado_en
+        datetime eliminado_en
+    }
+```
+
+---
+
+# Lo que NO se implementará todavía
+
+## No incluido en esta etapa
+
+* sincronización real
+* polling
+* mobile
+* WebSockets
+* Kafka
+* Kubernetes
+* adjuntos funcionales
+* almacenamiento cloud
+
+---
+
+# Resultado esperado de la Parte I
+
+Al finalizar la Parte I se tendrá:
+
+## Frontend
+
+* UI moderna
+* responsive
+* sistema de temas
+* arquitectura limpia Angular
+* componentes reutilizables
+
+---
+
+## Backend
+
+* API segura
+* autenticación JWT
+* CRUD de notas
+* CRUD de categorías
+* roles y permisos
+* arquitectura limpia Spring Boot
+
+---
+
+## Base de Datos
+
+* estructura profesional
+* preparada para crecimiento futuro
+* preparada para sync
+* preparada para archivos
+* preparada para mobile
+
+---
+
+# Conclusión
+
+La prioridad NO es agregar funcionalidades complejas rápidamente.
+
+La prioridad es:
+
+* crear una base sólida
+* crear un sistema mantenible
+* crear una arquitectura escalable
+* evitar deuda técnica futura
+
+La aplicación crecerá sobre una base limpia y preparada desde el inicio.

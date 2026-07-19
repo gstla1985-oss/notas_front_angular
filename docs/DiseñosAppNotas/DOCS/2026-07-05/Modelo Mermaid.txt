@@ -1,0 +1,88 @@
+erDiagram
+
+    USUARIO ||--o{ NOTA : posee
+    USUARIO ||--o{ CATEGORIA : crea
+    USUARIO ||--o{ USUARIO_ROL : tiene
+
+    ROL ||--o{ USUARIO_ROL : asignado
+    ROL ||--o{ ROL_PERMISO : tiene
+
+    PERMISO ||--o{ ROL_PERMISO : asignado
+
+    NOTA ||--o{ ADJUNTO : contiene
+    CATEGORIA ||--o{ NOTA : agrupa
+    IDIOMA ||--o{ NOTA : define
+
+
+    USUARIO {
+        uuid id
+        string email
+        string password
+        datetime creado_en
+        datetime actualizado_en
+        datetime eliminado_en
+    }
+
+    ROL {
+        uuid id
+        string nombre
+    }
+
+    PERMISO {
+        uuid id
+        string nombre
+    }
+
+    USUARIO_ROL {
+        uuid usuario_id
+        uuid rol_id
+    }
+
+    ROL_PERMISO {
+        uuid rol_id
+        uuid permiso_id
+    }
+
+    CATEGORIA {
+        uuid id
+        string nombre
+        string color
+        uuid usuario_id
+        datetime creado_en
+        datetime actualizado_en
+    }
+
+    IDIOMA {
+        uuid id
+        string codigo
+        string nombre
+    }
+
+    NOTA {
+        uuid id
+        uuid usuario_id
+        uuid categoria_id
+        uuid idioma_id
+
+        text contenido
+
+        int version
+        datetime creado_en
+        datetime actualizado_en
+        datetime eliminado_en
+        datetime ultima_modificacion
+    }
+
+    ADJUNTO {
+        uuid id
+        uuid nota_id
+
+        string nombre_archivo
+        string tipo_archivo
+        string url_archivo
+
+        int orden
+
+        datetime creado_en
+        datetime eliminado_en
+    }

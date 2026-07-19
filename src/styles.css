@@ -1,0 +1,299 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+/* ===== THEME CSS VARIABLES ===== */
+
+:root,
+[data-theme='amethyst'] {
+  --bg-primary: #FAF5FF;
+  --bg-secondary: #F5F0FF;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(243, 240, 255, 0.9);
+  --bg-sidebar: transparent;
+  --bg-input: rgba(255, 255, 255, 0.95);
+  --bg-bubble: #FFFFFF;
+  --bg-bubble-sent: #F3EEFF;
+  --bg-selected: rgba(139, 92, 246, 0.15);
+  --bg-button-primary: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  --bg-button-secondary: #FFFFFF;
+  --bg-nav: rgba(255, 255, 255, 0.8);
+
+  --text-primary: #1E1B4B;
+  --text-secondary: #6B7280;
+  --text-accent: #7C3AED;
+  --text-on-primary: #FFFFFF;
+  --text-link: #7C3AED;
+  --text-muted: #9CA3AF;
+
+  --border-color: rgba(139, 92, 246, 0.2);
+  --border-input: rgba(139, 92, 246, 0.3);
+  --border-card: rgba(139, 92, 246, 0.15);
+
+  --accent: #7C3AED;
+  --accent-light: #A78BFA;
+  --accent-dark: #6D28D9;
+
+  --shadow-card: 0 4px 24px rgba(139, 92, 246, 0.1);
+  --shadow-button: 0 4px 16px rgba(124, 58, 237, 0.3);
+
+  --glow: none;
+
+  --crystal-hue: 270deg;
+  --bg-form-card: #F5F1F9;
+  --bg-form-input: #F5F1F9;
+  --border-form-card: 1.5px solid rgba(139, 92, 246, 0.3);
+  --glow-form-card: 0 10px 40px rgba(139, 92, 246, 0.1);
+}
+
+[data-theme='ruby'] {
+  --bg-primary: #0F0505;
+  --bg-secondary: #1A0A0A;
+  --bg-card: rgba(60, 10, 10, 0.6);
+  --bg-card-hover: rgba(80, 15, 15, 0.7);
+  --bg-sidebar: rgba(30, 5, 5, 0.8);
+  --bg-input: rgba(60, 10, 10, 0.5);
+  --bg-bubble: rgba(80, 15, 15, 0.6);
+  --bg-bubble-sent: rgba(120, 20, 20, 0.5);
+  --bg-selected: rgba(225, 29, 72, 0.2);
+  --bg-button-primary: linear-gradient(135deg, #E11D48, #BE123C);
+  --bg-button-secondary: rgba(60, 10, 10, 0.6);
+  --bg-nav: rgba(15, 5, 5, 0.9);
+
+  --text-primary: #FEE2E2;
+  --text-secondary: #FCA5A5;
+  --text-accent: #FB7185;
+  --text-on-primary: #FFFFFF;
+  --text-link: #FB7185;
+  --text-muted: #9B7A7A;
+
+  --border-color: rgba(225, 29, 72, 0.25);
+  --border-input: rgba(225, 29, 72, 0.35);
+  --border-card: rgba(225, 29, 72, 0.2);
+
+  --accent: #E11D48;
+  --accent-light: #FB7185;
+  --accent-dark: #BE123C;
+
+  --shadow-card: 0 4px 24px rgba(225, 29, 72, 0.15);
+  --shadow-button: 0 4px 16px rgba(225, 29, 72, 0.4);
+
+  --glow: 0 0 30px rgba(225, 29, 72, 0.2);
+
+  --crystal-hue: 0deg;
+  --bg-form-card: #1A0A0A;
+  --bg-form-input: #0F0505;
+  --border-form-card: 1.5px solid rgba(251, 113, 133, 0.4);
+  --glow-form-card: 0 0 20px rgba(225, 29, 72, 0.15), 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='opalo'] {
+  --bg-primary: #F5ECD7;
+  --bg-secondary: #EDE0C4;
+  --bg-card: rgba(255, 248, 235, 0.92);
+  --bg-card-hover: rgba(255, 243, 220, 0.96);
+  --bg-sidebar: rgba(237, 224, 196, 0.7);
+  --bg-input: rgba(255, 252, 245, 0.95);
+  --bg-bubble: #FFFAF0;
+  --bg-bubble-sent: #F5E6CC;
+  --bg-selected: rgba(139, 69, 19, 0.12);
+  --bg-button-primary: linear-gradient(135deg, #8B4513, #6B3410);
+  --bg-button-secondary: #FFF8EB;
+  --bg-nav: rgba(245, 236, 215, 0.9);
+
+  --text-primary: #3B1F0A;
+  --text-secondary: #7A5C3A;
+  --text-accent: #8B4513;
+  --text-on-primary: #FFF8EB;
+  --text-link: #8B4513;
+  --text-muted: #A08060;
+
+  --border-color: rgba(139, 69, 19, 0.2);
+  --border-input: rgba(139, 69, 19, 0.3);
+  --border-card: rgba(139, 69, 19, 0.15);
+
+  --accent: #8B4513;
+  --accent-light: #C4874A;
+  --accent-dark: #6B3410;
+
+  --shadow-card: 0 4px 24px rgba(139, 69, 19, 0.1);
+  --shadow-button: 0 4px 16px rgba(139, 69, 19, 0.3);
+
+  --glow: none;
+
+  --crystal-hue: 30deg;
+  --bg-form-card: #EDE0C4;
+  --bg-form-input: #F5ECD7;
+  --border-form-card: 1.5px solid rgba(139, 69, 19, 0.3);
+  --glow-form-card: 0 10px 40px rgba(139, 69, 19, 0.1);
+}
+
+[data-theme='zafiro'] {
+  --bg-primary: #050C2E;
+  --bg-secondary: #0A1545;
+  --bg-card: rgba(10, 20, 70, 0.75);
+  --bg-card-hover: rgba(15, 28, 90, 0.85);
+  --bg-sidebar: rgba(6, 12, 45, 0.85);
+  --bg-input: rgba(10, 20, 70, 0.6);
+  --bg-bubble: rgba(12, 24, 80, 0.7);
+  --bg-bubble-sent: rgba(20, 50, 140, 0.6);
+  --bg-selected: rgba(56, 139, 255, 0.22);
+  --bg-button-primary: linear-gradient(135deg, #1A6FFF, #0D4FCC);
+  --bg-button-secondary: rgba(10, 20, 70, 0.6);
+  --bg-nav: rgba(5, 10, 40, 0.92);
+
+  --text-primary: #D6E8FF;
+  --text-secondary: #7EB0FF;
+  --text-accent: #5BA4FF;
+  --text-on-primary: #FFFFFF;
+  --text-link: #5BA4FF;
+  --text-muted: #4A6FA8;
+
+  --border-color: rgba(56, 139, 255, 0.22);
+  --border-input: rgba(56, 139, 255, 0.35);
+  --border-card: rgba(56, 139, 255, 0.18);
+
+  --accent: #1A6FFF;
+  --accent-light: #5BA4FF;
+  --accent-dark: #0D4FCC;
+
+  --shadow-card: 0 4px 24px rgba(26, 111, 255, 0.18);
+  --shadow-button: 0 4px 16px rgba(26, 111, 255, 0.45);
+
+  --glow: 0 0 40px rgba(26, 111, 255, 0.25);
+
+  --crystal-hue: 220deg;
+  --bg-form-card: #0A1545;
+  --bg-form-input: #050C2E;
+  --border-form-card: 1.5px solid rgba(91, 164, 255, 0.4);
+  --glow-form-card: 0 0 25px rgba(26, 111, 255, 0.2), 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== BASE STYLES ===== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.5s ease, color 0.3s ease;
+}
+
+/* ===== SCROLLBAR ===== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-light);
+  border-radius: 3px;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary {
+  background: var(--bg-button-primary);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-button);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background: var(--bg-button-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+}
+
+.input-field {
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.1);
+}
+
+.text-accent {
+  color: var(--text-accent) !important;
+}
+
+/* ===== CRYSTAL DECORATIONS ===== */
+
+.crystal-bg {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  filter: hue-rotate(var(--crystal-hue));
+  transition: filter 0.5s ease;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
