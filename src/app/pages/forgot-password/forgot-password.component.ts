@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-forgot-password',
@@ -240,11 +242,32 @@ import { FormsModule } from '@angular/forms';
 })
 export class ForgotPasswordComponent {
   email: string = '';
+  loading = signal(false);
+  errorMessage = signal('');
+  successMessage = signal('');
+
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   requestReset() {
-    // Aquí iría el llamado HTTP al backend
-    console.log('Requesting reset for', this.email);
-    this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
+    if (!this.email) {
+      this.errorMessage.set('Por favor ingresa tu correo electrónico.');
+      return;
+    }
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    this.authService.forgotPassword(this.email).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/verify-otp'], { queryParams: { email: this.email, mode: 'reset' } });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        const msg = err?.error?.message || 'Si el correo existe, recibirás un código.';
+        this.successMessage.set(msg); // Show as success to avoid email enumeration
+      }
+    });
   }
 }
+

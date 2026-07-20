@@ -1,7 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-reset-password',
@@ -233,21 +235,48 @@ export class ResetPasswordComponent implements OnInit {
   email: string = '';
   otp: string = '';
   newPassword: string = '';
-  
+  confirmPassword: string = '';
+  loading = signal(false);
+  errorMessage = signal('');
+
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      if (params['email']) {
-        this.email = params['email'];
-      }
+      if (params['email']) this.email = params['email'];
+      if (params['otp']) this.otp = params['otp'];
     });
   }
 
   resetPassword() {
-    console.log('Resetting for', this.email, this.otp);
-    // Call API, then redirect to login
-    this.router.navigate(['/login']);
+    if (!this.newPassword || !this.confirmPassword) {
+      this.errorMessage.set('Por favor completa todos los campos.');
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.errorMessage.set('Las contraseñas no coinciden.');
+      return;
+    }
+    if (this.newPassword.length < 6) {
+      this.errorMessage.set('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    this.authService.resetPassword(this.email, this.otp, this.newPassword).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        const msg = err?.error?.message || 'Error al restablecer la contraseña.';
+        this.errorMessage.set(msg);
+      }
+    });
   }
 }
