@@ -10,7 +10,9 @@ postgresql://neondb_owner:npg_ewKR8QPNCD4Y@ep-noisy-wind-auvjlq6g-pooler.c-10.us
 
 ---------------------------------
 resend datos de coneccion (api key)
-re_VNzZtd3i_8DLwFpsMESwbT1T8L3jBhtnc
+
+
+re_RfdR4MWx_5Aict1ACDka9jb6PAwAfD3XH
 
 ejemplo envio resend:
 import com.resend.*;

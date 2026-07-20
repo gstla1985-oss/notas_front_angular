@@ -41,3 +41,7 @@ src/
 
 ## Fase Actual
 **FASE 1 — Mockup Frontend** (datos mock, sin backend)
+
+
+Correr api :
+.\gradlew bootRun

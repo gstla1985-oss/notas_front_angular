@@ -69,7 +69,6 @@ import { AuthService } from '../../core/services/auth.service';
             <label class="checkbox-label">
               <input type="checkbox" /><span>Recordarme</span>
             </label>
-            <a routerLink="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
           </div>
 
           <button id="login-btn" class="btn-primary login-btn" (click)="doLogin()" [disabled]="loading()">
