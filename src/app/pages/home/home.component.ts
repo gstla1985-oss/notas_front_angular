@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal, effect, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, ElementRef, ViewChild, AfterViewChecked, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { ThemeService } from '../../core/services/theme.service';
+import { ThemeService, THEME_OPTIONS, ThemeOption } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CategoryService, Category } from '../../core/services/category.service';
 import { NoteService, Note } from '../../core/services/note.service';
@@ -83,6 +83,47 @@ import { DatePipe } from '@angular/common';
           <!-- Mobile Nav -->
           <div class="mobile-nav">
              <div class="nav-item active"><span class="nav-icon">📁</span><span class="nav-label">Notas</span></div>
+          </div>
+
+          <!-- Config Button (WhatsApp style) -->
+          <div class="config-wrapper" [class.open]="configOpen()">
+            @if (configOpen()) {
+              <div class="config-panel glass animate-fade-in-up">
+                <!-- Personalización -->
+                <div class="config-section">
+                  <div class="config-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    Personalización
+                  </div>
+                  <div class="theme-grid">
+                    @for (theme of themeOptions; track theme.name) {
+                      <button 
+                        class="theme-option"
+                        [class.active]="themeService.currentTheme() === theme.name"
+                        (click)="selectTheme(theme.name)"
+                        [title]="theme.description"
+                      >
+                        <span class="theme-emoji">{{ theme.emoji }}</span>
+                        <span class="theme-label">{{ theme.label }}</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <div class="config-divider"></div>
+
+                <!-- Cerrar Sesión -->
+                <button class="config-logout" (click)="logout()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  Cerrar Sesión
+                </button>
+              </div>
+            }
+
+            <button class="config-btn" (click)="toggleConfig()" [class.active]="configOpen()" title="Configuración">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configuración
+            </button>
           </div>
         </aside>
 
@@ -178,6 +219,24 @@ import { DatePipe } from '@angular/common';
     .add-cat-btn { width: 100%; padding: 12px; border-radius: 14px; border: 1px dashed var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
     .add-cat-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--accent); }
 
+    /* Config / Settings panel */
+    .config-wrapper { position: relative; padding: 12px; border-top: 1px solid var(--border-color); }
+    .config-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 16px; border-radius: 14px; background: transparent; border: 1px solid transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .config-btn:hover, .config-btn.active { background: var(--bg-selected); color: var(--accent); border-color: var(--border-color); }
+    .config-btn svg { flex-shrink: 0; transition: transform 0.3s; }
+    .config-btn.active svg { transform: rotate(45deg); }
+    .config-panel { position: absolute; bottom: calc(100% + 8px); left: 12px; right: 12px; border-radius: 18px; padding: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; z-index: 50; }
+    .config-section-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .theme-option { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 12px; border: 1.5px solid var(--border-color); background: transparent; cursor: pointer; transition: all 0.2s; color: var(--text-primary); font-family: 'Inter', sans-serif; }
+    .theme-option:hover { background: var(--bg-card-hover); border-color: var(--accent); }
+    .theme-option.active { background: var(--bg-selected); border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+    .theme-emoji { font-size: 20px; }
+    .theme-label { font-size: 11px; font-weight: 700; }
+    .config-divider { height: 1px; background: var(--border-color); }
+    .config-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 16px; border-radius: 12px; background: transparent; border: none; color: #ef4444; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .config-logout:hover { background: rgba(239, 68, 68, 0.1); }
+
     .main-content { flex: 1; display: flex; flex-direction: column; background: transparent; position: relative; }
     .chat-header { padding: 15px 25px; background: transparent; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; }
     .header-info { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -231,18 +290,33 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   readonly authService = inject(AuthService);
   readonly categoryService = inject(CategoryService);
   readonly noteService = inject(NoteService);
+  readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
+  readonly themeOptions: ThemeOption[] = THEME_OPTIONS;
+
   sidebarOpen = signal(false);
   menuOpen = signal(false);
+  configOpen = signal(false);
   
   isCreatingCategory = signal(false);
   newCategoryName = '';
 
   newNoteBody = '';
   isSending = signal(false);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (this.configOpen() && !target.closest('.config-wrapper')) {
+      this.configOpen.set(false);
+    }
+    if (this.menuOpen() && !target.closest('.header-actions')) {
+      this.menuOpen.set(false);
+    }
+  }
 
   ngOnInit() {
     this.categoryService.loadCategories();
@@ -268,7 +342,16 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     this.menuOpen.update(v => !v);
   }
 
+  toggleConfig(): void {
+    this.configOpen.update(v => !v);
+  }
+
+  selectTheme(name: any): void {
+    this.themeService.setTheme(name);
+  }
+
   logout(): void {
+    this.configOpen.set(false);
     this.authService.logout();
     this.router.navigate(['/login']);
   }
