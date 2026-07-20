@@ -181,7 +181,7 @@ export class RegisterComponent {
     this.authService.register(this.email, this.password, this.name || undefined).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['/verify-otp'], { queryParams: { email: this.email, mode: 'registration' } });
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         this.loading.set(false);

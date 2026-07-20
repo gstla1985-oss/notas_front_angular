@@ -27,7 +27,14 @@ export class AuthService {
   }
 
   register(email: string, password: string, name?: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password, name });
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password, name }).pipe(
+      tap(response => {
+        if (response.token) {
+          localStorage.setItem('auth_token', response.token);
+          localStorage.setItem('auth_email', email);
+        }
+      })
+    );
   }
 
   verifyRegistrationOtp(email: string, otp: string): Observable<AuthResponse> {
