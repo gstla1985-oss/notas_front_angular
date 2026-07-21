@@ -1,5 +1,27 @@
+IDEAS FUTURAS:
+
+PROPIEDADES NOTAS: FIJADA, TEMPORAL, ENCRIPTADA
 
 
+"VISTAS"(TIPOS DE CATEGORIAS):
+ VISTA EXCEL 
+ VISTA CALENDARIO 
+ 
+
+ "TIPOS DE NOTAS": Checklist, Recordatorio, Log(Bitacora) etc.
+
+Celular: Interaccion => Notificaciones y Alarmas
+
+
+
+
+
+
+
+
+
+
+******************************************
 19 7 26:
 se desplego la db , correos y front
 

@@ -75,4 +75,16 @@ export class NoteService {
       tap(() => this.loadNotes(this.activeCategoryId()))
     );
   }
+
+  copyToCategories(id: string, categoryIds: (number | null)[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/copy-to`, { categoryIds }, { responseType: 'text' }).pipe(
+      tap(() => this.loadNotes(this.activeCategoryId()))
+    );
+  }
+
+  moveToCategories(id: string, categoryIds: (number | null)[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/move-to`, { categoryIds }, { responseType: 'text' }).pipe(
+      tap(() => this.loadNotes(this.activeCategoryId()))
+    );
+  }
 }

@@ -167,11 +167,11 @@ import { CommonModule } from '@angular/common';
 
             @for (note of reversedNotes(); track note.id) {
               <div class="message-row sent">
-                <div class="message-bubble glass">
+                <div class="message-bubble glass" (contextmenu)="onNoteContextMenu($event, note)">
                   <p class="message-text">{{ note.body }}</p>
                   <div class="message-footer">
                     <span class="message-time">{{ note.createdAt | date:'short' }}</span>
-                    <button (click)="deleteNote(note.id)" style="background:none; border:none; color: #ef4444; font-size:10px; cursor:pointer; opacity:0.6;">Eliminar</button>
+                    <button class="note-options-btn" (click)="onNoteOptionsClick($event, note)">⋮</button>
                   </div>
                 </div>
               </div>
@@ -223,6 +223,80 @@ import { CommonModule } from '@angular/common';
             <div class="modal-actions">
               <button class="btn-secondary" (click)="showDeleteModal.set(false)">Cancelar</button>
               <button class="btn-danger" (click)="executeDeleteCategory()">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Context Menu for Note -->
+      @if (noteContextMenuOpen() && noteToEdit) {
+        <div 
+          class="dropdown-menu glass animate-fade-in-up" 
+          [style.position]="'fixed'"
+          [style.left.px]="noteContextMenuPosition.x"
+          [style.top.px]="noteContextMenuPosition.y"
+          style="z-index: 1000;"
+        >
+          <button class="menu-item" (click)="openEditNoteModal()">
+            <span class="menu-icon">✏️</span>
+            <span>Editar</span>
+          </button>
+          <button class="menu-item" (click)="openMultiSelectModal('copy')">
+            <span class="menu-icon">📄</span>
+            <span>Copiar a...</span>
+          </button>
+          <button class="menu-item" (click)="openMultiSelectModal('move')">
+            <span class="menu-icon">➡️</span>
+            <span>Mover a...</span>
+          </button>
+          <button class="menu-item danger" (click)="deleteNote(noteToEdit.id)">
+            <span class="menu-icon">🗑️</span>
+            <span>Eliminar</span>
+          </button>
+        </div>
+      }
+
+      <!-- Edit Note Modal -->
+      @if (showEditNoteModal()) {
+        <div class="modal-overlay animate-fade-in">
+          <div class="modal-content glass animate-fade-in-up">
+            <h3 class="modal-title">Editar Nota</h3>
+            <textarea class="input-field" [(ngModel)]="editNoteBody" rows="4" style="width: 100%; margin-bottom: 16px; padding: 12px; resize: none;"></textarea>
+            <div class="modal-actions">
+              <button class="btn-secondary" (click)="showEditNoteModal.set(false)">Cancelar</button>
+              <button class="btn-primary" (click)="executeEditNote()">Guardar</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Copy/Move Note Modal -->
+      @if (showMultiSelectModal()) {
+        <div class="modal-overlay animate-fade-in">
+          <div class="modal-content glass animate-fade-in-up">
+            <h3 class="modal-title">{{ multiSelectAction() === 'copy' ? 'Copiar a...' : 'Mover a...' }}</h3>
+            <div class="category-selection-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+              <!-- General Option -->
+              <label class="category-checkbox-item">
+                <input type="checkbox" [checked]="selectedCategories.has(null)" (change)="toggleCategorySelection(null)">
+                <span class="cat-icon">📂</span>
+                <span>General / Sin clasificar</span>
+              </label>
+              
+              <!-- Dynamic Categories -->
+              @for (cat of categoryService.categories(); track cat.id) {
+                <label class="category-checkbox-item">
+                  <input type="checkbox" [checked]="selectedCategories.has(cat.id)" (change)="toggleCategorySelection(cat.id)">
+                  <span class="cat-icon" [style.color]="cat.color">📁</span>
+                  <span>{{ cat.name }}</span>
+                </label>
+              }
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" (click)="showMultiSelectModal.set(false)">Cancelar</button>
+              <button class="btn-primary" (click)="executeMultiSelectAction()">
+                {{ multiSelectAction() === 'copy' ? 'Copiar' : 'Mover' }}
+              </button>
             </div>
           </div>
         </div>
@@ -289,6 +363,11 @@ import { CommonModule } from '@angular/common';
     .message-text { font-size: 14px; line-height: 1.5; white-space: pre-wrap; margin:0;}
     .message-footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 6px; }
     .message-time { font-size: 10px; opacity: 0.6; }
+    .note-options-btn { background: none; border: none; color: var(--text-primary); opacity: 0.6; cursor: pointer; font-size: 14px; padding: 0 4px; border-radius: 4px; }
+    .note-options-btn:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+    .category-checkbox-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+    .category-checkbox-item:hover { background: var(--bg-card-hover); }
+    .category-checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
 
     .chat-input-bar { padding: 20px 25px; display: flex; align-items: center; gap: 15px; }
     .input-container { flex: 1; display: flex; align-items: center; padding: 5px 15px; border-radius: 25px; }
@@ -358,6 +437,17 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   showDeleteModal = signal(false);
   categoryToDeleteId: number | null = null;
 
+  noteContextMenuOpen = signal(false);
+  noteContextMenuPosition = { x: 0, y: 0 };
+  noteToEdit: Note | null = null;
+
+  showEditNoteModal = signal(false);
+  editNoteBody = '';
+
+  showMultiSelectModal = signal(false);
+  multiSelectAction = signal<'copy' | 'move'>('copy');
+  selectedCategories = new Set<number | null>();
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
@@ -369,6 +459,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     }
     if (this.contextMenuOpen()) {
       this.contextMenuOpen.set(false);
+    }
+    if (this.noteContextMenuOpen()) {
+      this.noteContextMenuOpen.set(false);
     }
   }
 
@@ -484,6 +577,76 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   deleteNote(id: string): void {
-    this.noteService.deleteNote(id).subscribe();
+    this.noteService.deleteNote(id).subscribe({
+      next: () => {
+        this.noteContextMenuOpen.set(false);
+        this.noteToEdit = null;
+      }
+    });
+  }
+
+  onNoteContextMenu(event: MouseEvent, note: Note): void {
+    event.preventDefault();
+    this.openNoteMenu(event.clientX, event.clientY, note);
+  }
+
+  onNoteOptionsClick(event: MouseEvent, note: Note): void {
+    event.stopPropagation();
+    this.openNoteMenu(event.clientX, event.clientY, note);
+  }
+
+  private openNoteMenu(x: number, y: number, note: Note): void {
+    this.noteContextMenuPosition = { x, y };
+    this.noteToEdit = note;
+    this.noteContextMenuOpen.set(true);
+    this.contextMenuOpen.set(false);
+  }
+
+  openEditNoteModal(): void {
+    if (!this.noteToEdit) return;
+    this.editNoteBody = this.noteToEdit.body;
+    this.showEditNoteModal.set(true);
+    this.noteContextMenuOpen.set(false);
+  }
+
+  executeEditNote(): void {
+    if (!this.noteToEdit || !this.editNoteBody.trim()) return;
+    this.noteService.updateNote(this.noteToEdit.id, this.noteToEdit.categoryId, this.noteToEdit.title, this.editNoteBody).subscribe({
+      next: () => {
+        this.showEditNoteModal.set(false);
+        this.noteToEdit = null;
+      }
+    });
+  }
+
+  openMultiSelectModal(action: 'copy' | 'move'): void {
+    this.multiSelectAction.set(action);
+    this.selectedCategories.clear();
+    this.showMultiSelectModal.set(true);
+    this.noteContextMenuOpen.set(false);
+  }
+
+  toggleCategorySelection(id: number | null): void {
+    if (this.selectedCategories.has(id)) {
+      this.selectedCategories.delete(id);
+    } else {
+      this.selectedCategories.add(id);
+    }
+  }
+
+  executeMultiSelectAction(): void {
+    if (!this.noteToEdit || this.selectedCategories.size === 0) return;
+    const catIds = Array.from(this.selectedCategories);
+    
+    const request$ = this.multiSelectAction() === 'copy'
+      ? this.noteService.copyToCategories(this.noteToEdit.id, catIds)
+      : this.noteService.moveToCategories(this.noteToEdit.id, catIds);
+
+    request$.subscribe({
+      next: () => {
+        this.showMultiSelectModal.set(false);
+        this.noteToEdit = null;
+      }
+    });
   }
 }
