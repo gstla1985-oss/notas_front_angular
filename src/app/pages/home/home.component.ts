@@ -362,7 +362,7 @@ import { CommonModule } from '@angular/common';
     .action-btn { background: transparent; border: none; font-size: 20px; color: var(--text-primary); cursor: pointer; padding: 4px 12px; border-radius: 8px; transition: background 0.2s; }
     .action-btn:hover { background: var(--bg-card-hover); }
     
-    .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 200px; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 100; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); }
+    .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 130px; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 100; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); }
     .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: transparent; border: none; border-radius: 12px; color: var(--text-primary); font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.2s; width: 100%; }
     .menu-item:hover { background: var(--bg-selected); color: var(--text-accent); }
     .menu-item.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
@@ -611,8 +611,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   private openNoteMenu(x: number, y: number, note: Note): void {
-    const menuWidth = 210;
-    const adjustedX = Math.max(4, x - menuWidth);
+    // Se reduce el valor a restar para que el menú aparezca un poco más a la derecha
+    const adjustedX = Math.max(4, x - 120);
     this.noteContextMenuPosition = { x: adjustedX, y };
     this.noteToEdit = note;
     this.noteContextMenuOpen.set(true);
