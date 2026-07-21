@@ -670,8 +670,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     }
 
     const request$ = this.multiSelectAction() === 'copy'
-      ? this.noteService.copyToCategories(this.noteToEdit.id, catIds)
-      : this.noteService.moveToCategories(this.noteToEdit.id, catIds);
+      ? this.noteService.copyToCategories(this.noteToEdit.id, catIds, this.noteToEdit.title, this.noteToEdit.body, this.noteToEdit.noteType)
+      : this.noteService.moveToCategories(this.noteToEdit.id, catIds, this.noteToEdit.title, this.noteToEdit.body, this.noteToEdit.noteType);
 
     request$.subscribe({
       next: () => {

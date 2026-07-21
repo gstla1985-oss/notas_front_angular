@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Note {
@@ -76,14 +76,29 @@ export class NoteService {
     );
   }
 
-  copyToCategories(id: string, categoryIds: (number | null)[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/copy-to`, { categoryIds }, { responseType: 'text' }).pipe(
+  copyToCategories(id: string, categoryIds: (number | null)[], title: string, body: string, noteType: 'TEXT' | 'CHECKLIST'): Observable<any> {
+    if (categoryIds.length === 0) return new Observable(subscriber => subscriber.next());
+    const requests = categoryIds.map(catId =>
+      this.http.post<Note>(this.apiUrl, { categoryId: catId, title, body, noteType })
+    );
+    return forkJoin(requests).pipe(
       tap(() => this.loadNotes(this.activeCategoryId()))
     );
   }
 
-  moveToCategories(id: string, categoryIds: (number | null)[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/move-to`, { categoryIds }, { responseType: 'text' }).pipe(
+  moveToCategories(id: string, categoryIds: (number | null)[], title: string, body: string, noteType: 'TEXT' | 'CHECKLIST'): Observable<any> {
+    if (categoryIds.length === 0) return new Observable(subscriber => subscriber.next());
+    
+    // El primer destino se mueve usando PUT /notes/{id}/move
+    const firstCatId = categoryIds[0];
+    const moveRequest = this.http.put<Note>(`${this.apiUrl}/${id}/move`, { categoryId: firstCatId });
+    
+    // Los demás destinos se copian usando POST /notes
+    const copyRequests = categoryIds.slice(1).map(catId =>
+      this.http.post<Note>(this.apiUrl, { categoryId: catId, title, body, noteType })
+    );
+    
+    return forkJoin([moveRequest, ...copyRequests]).pipe(
       tap(() => this.loadNotes(this.activeCategoryId()))
     );
   }
