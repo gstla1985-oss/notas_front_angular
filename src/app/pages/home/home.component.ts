@@ -243,7 +243,7 @@ import { CommonModule } from '@angular/common';
           [style.position]="'fixed'"
           [style.left.px]="noteContextMenuPosition.x"
           [style.top.px]="noteContextMenuPosition.y"
-          style="z-index: 1000; width: 140px; min-width: 140px;"
+          style="z-index: 1000; width: 170px; min-width: 170px;"
         >
           <button class="menu-item" (click)="openEditNoteModal()">
             <span class="menu-icon">✏️</span>
@@ -611,7 +611,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   private openNoteMenu(x: number, y: number, note: Note): void {
-    const menuWidth = 140;
+    const menuWidth = 170;
     const adjustedX = Math.max(4, x - menuWidth);
     this.noteContextMenuPosition = { x: adjustedX, y };
     this.noteToEdit = note;
