@@ -27,6 +27,54 @@ import { CommonModule } from '@angular/common';
               </span>
               <input type="text" placeholder="Buscar categoría..." class="search-input input-field">
             </div>
+
+            <!-- Config Button (gear only) -->
+            <div class="config-wrapper" [class.open]="configOpen()">
+              <button class="config-btn-icon" (click)="toggleConfig()" [class.active]="configOpen()" title="Configuración">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </button>
+              
+              @if (configOpen()) {
+                <div class="config-panel glass animate-fade-in-up">
+                  <!-- Personalización -->
+                  <div class="config-section">
+                    <div class="config-section-title">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                      Personalización
+                    </div>
+                    <div class="theme-grid">
+                      @for (theme of themeOptions; track theme.name) {
+                        <button 
+                          class="theme-option"
+                          [class.active]="themeService.currentTheme() === theme.name"
+                          (click)="selectTheme(theme.name)"
+                          [title]="theme.description"
+                        >
+                          <span class="theme-emoji">{{ theme.emoji }}</span>
+                          <span class="theme-label">{{ theme.label }}</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
+  
+                  <div class="config-divider"></div>
+  
+                  <!-- Mi Cuenta -->
+                  <button class="config-profile" (click)="goToProfile()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Mi Cuenta
+                  </button>
+  
+                  <div class="config-divider"></div>
+  
+                  <!-- Cerrar Sesión -->
+                  <button class="config-logout" (click)="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Cerrar Sesión
+                  </button>
+                </div>
+              }
+            </div>
           </div>
 
           <div class="category-list">
@@ -66,73 +114,19 @@ import { CommonModule } from '@angular/common';
             }
           </div>
 
-          <!-- Add Category Button -->
-          <div class="add-cat-wrapper" style="padding: 12px;">
+          <!-- Add Category Button (Floating) -->
+          <div class="add-cat-wrapper">
              @if (isCreatingCategory()) {
-               <div style="display: flex; gap: 4px;">
-                 <input type="text" [(ngModel)]="newCategoryName" placeholder="Nombre" class="input-field" style="flex:1; padding: 6px 10px;">
+               <div style="display: flex; gap: 4px; background: var(--bg-card); padding: 8px; border-radius: 12px; box-shadow: var(--shadow-card);">
+                 <input type="text" [(ngModel)]="newCategoryName" placeholder="Nombre" class="input-field" style="flex:1; padding: 6px 10px;" (keyup.enter)="createCategory()">
                  <button (click)="createCategory()" class="btn-primary" style="padding: 6px 12px; border-radius: 8px;">✓</button>
-                 <button (click)="isCreatingCategory.set(false)" style="background:transparent; border:none; color:var(--text-secondary);">✕</button>
+                 <button (click)="isCreatingCategory.set(false)" style="background:transparent; border:none; color:var(--text-secondary); cursor: pointer;">✕</button>
                </div>
              } @else {
-               <button class="add-cat-btn glass" (click)="isCreatingCategory.set(true)">
-                 + Nueva Categoría
+               <button class="add-cat-btn-floating glass" (click)="isCreatingCategory.set(true)" title="Nueva Categoría">
+                 +
                </button>
              }
-          </div>
-
-          <!-- Mobile Nav -->
-          <div class="mobile-nav">
-             <div class="nav-item active"><span class="nav-icon">📁</span><span class="nav-label">Notas</span></div>
-          </div>
-
-          <!-- Config Button (WhatsApp style) -->
-          <div class="config-wrapper" [class.open]="configOpen()">
-            @if (configOpen()) {
-              <div class="config-panel glass animate-fade-in-up">
-                <!-- Personalización -->
-                <div class="config-section">
-                  <div class="config-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    Personalización
-                  </div>
-                  <div class="theme-grid">
-                    @for (theme of themeOptions; track theme.name) {
-                      <button 
-                        class="theme-option"
-                        [class.active]="themeService.currentTheme() === theme.name"
-                        (click)="selectTheme(theme.name)"
-                        [title]="theme.description"
-                      >
-                        <span class="theme-emoji">{{ theme.emoji }}</span>
-                        <span class="theme-label">{{ theme.label }}</span>
-                      </button>
-                    }
-                  </div>
-                </div>
-
-                <div class="config-divider"></div>
-
-                <!-- Mi Cuenta -->
-                <button class="config-profile" (click)="goToProfile()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  Mi Cuenta
-                </button>
-
-                <div class="config-divider"></div>
-
-                <!-- Cerrar Sesión -->
-                <button class="config-logout" (click)="logout()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                  Cerrar Sesión
-                </button>
-              </div>
-            }
-
-            <button class="config-btn" (click)="toggleConfig()" [class.active]="configOpen()" title="Configuración">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              Configuración
-            </button>
           </div>
         </aside>
 
@@ -314,9 +308,9 @@ import { CommonModule } from '@angular/common';
   styles: [`
     .home-container { height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; padding: 20px; position: relative; overflow: hidden; }
     .layout { width: 100%; max-width: 1200px; height: 100%; max-height: 850px; display: flex; border-radius: 32px; overflow: hidden; z-index: 10; border: 1px solid var(--border-card); box-shadow: var(--shadow-card); }
-    .sidebar { width: 350px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: all 0.3s ease; }
-    .sidebar-header { padding: 20px 12px 12px 12px; }
-    .search-wrapper { position: relative; display: flex; align-items: center; }
+    .sidebar { width: 350px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; }
+    .sidebar-header { padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .search-wrapper { position: relative; display: flex; align-items: center; flex: 1; }
     .search-icon { position: absolute; left: 14px; display: flex; align-items: center; justify-content: center; color: var(--accent); opacity: 0.8; }
     .search-input { width: 100%; padding: 10px 10px 10px 35px; border-radius: 20px; font-size: 13px; }
     .category-list { flex: 1; overflow-y: auto; background: transparent; margin: 0 4px 0 12px; padding: 0 8px 0 0; }
@@ -331,16 +325,17 @@ import { CommonModule } from '@angular/common';
     .cat-top { display: flex; justify-content: space-between; align-items: center; }
     .cat-name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     
-    .add-cat-btn { width: 100%; padding: 12px; border-radius: 14px; border: 1px dashed var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
-    .add-cat-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--accent); }
+    .add-cat-wrapper { position: absolute; bottom: 20px; right: 20px; z-index: 50; }
+    .add-cat-btn-floating { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; background: var(--accent); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s; }
+    .add-cat-btn-floating:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
     /* Config / Settings panel */
-    .config-wrapper { position: relative; padding: 12px; border-top: 1px solid var(--border-color); }
-    .config-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 16px; border-radius: 14px; background: transparent; border: 1px solid transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
-    .config-btn:hover, .config-btn.active { background: var(--bg-selected); color: var(--accent); border-color: var(--border-color); }
-    .config-btn svg { flex-shrink: 0; transition: transform 0.3s; }
-    .config-btn.active svg { transform: rotate(45deg); }
-    .config-panel { position: absolute; bottom: calc(100% + 8px); left: 12px; right: 12px; border-radius: 18px; padding: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; z-index: 50; }
+    .config-wrapper { position: relative; padding: 0; border: none; }
+    .config-btn-icon { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+    .config-btn-icon:hover, .config-btn-icon.active { background: var(--bg-selected); color: var(--accent); }
+    .config-btn-icon svg { transition: transform 0.3s; }
+    .config-btn-icon.active svg { transform: rotate(45deg); }
+    .config-panel { position: absolute; top: calc(100% + 10px); right: 0; width: 240px; border-radius: 18px; padding: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; z-index: 50; }
     .config-section-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .theme-option { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 12px; border: 1.5px solid var(--border-color); background: transparent; cursor: pointer; transition: all 0.2s; color: var(--text-primary); font-family: 'Inter', sans-serif; }
@@ -390,10 +385,6 @@ import { CommonModule } from '@angular/common';
     .crystal-top-right { top: -300px; right: -300px; }
     .crystal-bottom-left { bottom: -300px; left: -300px; }
 
-    .mobile-nav { display: none; background: var(--bg-nav); backdrop-filter: blur(10px); padding: 10px 0; border-top: 1px solid var(--border-color); }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav-icon { font-size: 20px; }
-    .nav-label { font-size: 10px; font-weight: 600; }
     .mobile-back { display: none; }
 
     @media (max-width: 900px) {
@@ -402,7 +393,6 @@ import { CommonModule } from '@angular/common';
       .sidebar { width: 100%; position: absolute; height: 100%; z-index: 20; transform: translateX(-100%); }
       .sidebar.mobile-open { transform: translateX(0); }
       .sidebar-header { padding-top: 50px; }
-      .mobile-nav { display: flex; }
       .chat-header { padding-top: 40px; }
       .mobile-back { display: block; background: transparent; border: none; font-size: 24px; cursor: pointer;}
     }
