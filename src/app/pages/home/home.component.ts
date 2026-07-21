@@ -243,7 +243,7 @@ import { CommonModule } from '@angular/common';
           [style.position]="'fixed'"
           [style.left.px]="noteContextMenuPosition.x"
           [style.top.px]="noteContextMenuPosition.y"
-          style="z-index: 1000;"
+          style="z-index: 1000; width: 140px; min-width: 140px;"
         >
           <button class="menu-item" (click)="openEditNoteModal()">
             <span class="menu-icon">✏️</span>
@@ -611,8 +611,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   private openNoteMenu(x: number, y: number, note: Note): void {
-    // Se reduce el valor a restar para que el menú aparezca un poco más a la derecha
-    const adjustedX = Math.max(4, x - 120);
+    const menuWidth = 140;
+    const adjustedX = Math.max(4, x - menuWidth);
     this.noteContextMenuPosition = { x: adjustedX, y };
     this.noteToEdit = note;
     this.noteContextMenuOpen.set(true);
@@ -653,14 +653,34 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   executeMultiSelectAction(): void {
     if (!this.noteToEdit || this.selectedCategories.size === 0) return;
-    const catIds = Array.from(this.selectedCategories);
+    let catIds = Array.from(this.selectedCategories);
     
+    // Si es mover, y se seleccionó la categoría actual (que causaría un bug en el backend donde se borra),
+    // la ignoramos para la lista. Si solo se seleccionó la actual, no hacemos nada y cerramos el modal.
+    if (this.multiSelectAction() === 'move') {
+      const currentCatId = this.noteToEdit.categoryId;
+      if (catIds.includes(currentCatId)) {
+        catIds = catIds.filter(id => id !== currentCatId);
+      }
+      if (catIds.length === 0) {
+        this.showMultiSelectModal.set(false);
+        this.noteToEdit = null;
+        return;
+      }
+    }
+
     const request$ = this.multiSelectAction() === 'copy'
       ? this.noteService.copyToCategories(this.noteToEdit.id, catIds)
       : this.noteService.moveToCategories(this.noteToEdit.id, catIds);
 
     request$.subscribe({
       next: () => {
+        this.showMultiSelectModal.set(false);
+        this.noteToEdit = null;
+      },
+      error: (err) => {
+        console.error('Action failed', err);
+        // Cerramos el modal de todas formas para no bloquear al usuario
         this.showMultiSelectModal.set(false);
         this.noteToEdit = null;
       }
