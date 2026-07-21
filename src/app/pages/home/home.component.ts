@@ -5,12 +5,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { CategoryService, Category } from '../../core/services/category.service';
 import { NoteService, Note } from '../../core/services/note.service';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, CommonModule],
   template: `
     <div class="home-container">
       <div class="crystal crystal-top-right animate-float"></div>
@@ -193,8 +193,6 @@ import { DatePipe } from '@angular/common';
             <button class="send-btn btn-primary animate-float" (click)="createNote()" [disabled]="!newNoteBody.trim() || isSending()">
               @if (isSending()) { <span class="spinner" style="width:14px;height:14px;"></span> } @else { ➤ }
             </button>
-          </footer>
-
           </footer>
 
         </main>
