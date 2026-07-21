@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { VerifyOtpComponent } from './pages/verify-otp/verify-otp.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 import { authGuard, noAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [noAuthGuard] },
   { path: 'verify-otp', component: VerifyOtpComponent },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },
 ];

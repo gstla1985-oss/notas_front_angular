@@ -113,6 +113,14 @@ import { CommonModule } from '@angular/common';
 
                 <div class="config-divider"></div>
 
+                <!-- Mi Cuenta -->
+                <button class="config-profile" (click)="goToProfile()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Mi Cuenta
+                </button>
+
+                <div class="config-divider"></div>
+
                 <!-- Cerrar Sesión -->
                 <button class="config-logout" (click)="logout()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -343,6 +351,8 @@ import { CommonModule } from '@angular/common';
     .config-divider { height: 1px; background: var(--border-color); }
     .config-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 16px; border-radius: 12px; background: transparent; border: none; color: #ef4444; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
     .config-logout:hover { background: rgba(239, 68, 68, 0.1); }
+    .config-profile { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 16px; border-radius: 12px; background: transparent; border: none; color: var(--text-secondary); font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .config-profile:hover { background: var(--bg-selected); color: var(--accent); }
 
     .main-content { flex: 1; display: flex; flex-direction: column; background: transparent; position: relative; }
     .chat-header { padding: 15px 25px; background: transparent; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; }
@@ -528,6 +538,11 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     this.themeService.setTheme(name);
   }
 
+  goToProfile(): void {
+    this.configOpen.set(false);
+    this.router.navigate(['/profile']);
+  }
+
   logout(): void {
     this.configOpen.set(false);
     this.authService.logout();
@@ -596,7 +611,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   private openNoteMenu(x: number, y: number, note: Note): void {
-    this.noteContextMenuPosition = { x, y };
+    const menuWidth = 210;
+    const adjustedX = Math.max(4, x - menuWidth);
+    this.noteContextMenuPosition = { x: adjustedX, y };
     this.noteToEdit = note;
     this.noteContextMenuOpen.set(true);
     this.contextMenuOpen.set(false);
