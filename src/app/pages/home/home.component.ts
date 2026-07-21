@@ -52,6 +52,7 @@ import { DatePipe } from '@angular/common';
                 class="category-item" 
                 [class.active]="noteService.activeCategoryId() === cat.id"
                 (click)="selectCategory(cat)"
+                (contextmenu)="onCategoryContextMenu($event, cat)"
               >
                 <div class="category-icon-circle" [style.background-color]="cat.color + '20'">
                   <span class="cat-icon" [style.color]="cat.color">📁</span>
@@ -140,15 +141,17 @@ import { DatePipe } from '@angular/common';
             <!-- User Menu -->
             <div class="header-actions">
               <span class="user-email" style="margin-right: 12px; font-size: 13px; opacity:0.8;">{{ authService.getEmail() }}</span>
-              <button class="action-btn" (click)="toggleMenu()">⋮</button>
-              
-              @if (menuOpen()) {
-                <div class="dropdown-menu glass animate-fade-in-up">
-                  <button class="menu-item danger" (click)="logout()">
-                    <span class="menu-icon">🚪</span>
-                    <span>Cerrar Sesión</span>
-                  </button>
-                </div>
+              @if (noteService.activeCategoryId() !== null) {
+                <button class="action-btn" (click)="toggleMenu()">⋮</button>
+                
+                @if (menuOpen()) {
+                  <div class="dropdown-menu glass animate-fade-in-up">
+                    <button class="menu-item danger" (click)="confirmDeleteCategory(noteService.activeCategoryId())">
+                      <span class="menu-icon">🗑️</span>
+                      <span>Eliminar Categoría</span>
+                    </button>
+                  </div>
+                }
               }
             </div>
           </header>
@@ -192,8 +195,40 @@ import { DatePipe } from '@angular/common';
             </button>
           </footer>
 
+          </footer>
+
         </main>
       </div>
+
+      <!-- Context Menu for Category -->
+      @if (contextMenuOpen() && categoryToEdit) {
+        <div 
+          class="dropdown-menu glass animate-fade-in-up" 
+          [style.position]="'fixed'"
+          [style.left.px]="contextMenuPosition.x"
+          [style.top.px]="contextMenuPosition.y"
+          style="z-index: 1000;"
+        >
+          <button class="menu-item danger" (click)="confirmDeleteCategory(categoryToEdit.id)">
+            <span class="menu-icon">🗑️</span>
+            <span>Eliminar Categoría</span>
+          </button>
+        </div>
+      }
+
+      <!-- Delete Category Modal -->
+      @if (showDeleteModal()) {
+        <div class="modal-overlay animate-fade-in">
+          <div class="modal-content glass animate-fade-in-up">
+            <h3 class="modal-title">¿Eliminar categoría?</h3>
+            <p class="modal-text">Estás a punto de eliminar la categoría y <strong>todas sus notas asociadas</strong>. Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+              <button class="btn-secondary" (click)="showDeleteModal.set(false)">Cancelar</button>
+              <button class="btn-danger" (click)="executeDeleteCategory()">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -284,6 +319,17 @@ import { DatePipe } from '@angular/common';
       .chat-header { padding-top: 40px; }
       .mobile-back { display: block; background: transparent; border: none; font-size: 24px; cursor: pointer;}
     }
+
+    /* Modal Styles */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--bg-form-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); padding: 24px; border-radius: 20px; max-width: 400px; width: 90%; }
+    .modal-title { font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; }
+    .modal-text { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+    .btn-secondary { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;}
+    .btn-secondary:hover { background: var(--bg-card-hover); }
+    .btn-danger { padding: 10px 16px; border-radius: 12px; border: none; background: #ef4444; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;}
+    .btn-danger:hover { background: #dc2626; }
   `],
 })
 export class HomeComponent implements OnInit, AfterViewChecked {
@@ -307,6 +353,13 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   newNoteBody = '';
   isSending = signal(false);
 
+  contextMenuOpen = signal(false);
+  contextMenuPosition = { x: 0, y: 0 };
+  categoryToEdit: Category | null = null;
+
+  showDeleteModal = signal(false);
+  categoryToDeleteId: number | null = null;
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
@@ -315,6 +368,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     }
     if (this.menuOpen() && !target.closest('.header-actions')) {
       this.menuOpen.set(false);
+    }
+    if (this.contextMenuOpen()) {
+      this.contextMenuOpen.set(false);
     }
   }
 
@@ -340,6 +396,37 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   toggleMenu(): void {
     this.menuOpen.update(v => !v);
+  }
+
+  onCategoryContextMenu(event: MouseEvent, cat: Category): void {
+    event.preventDefault();
+    this.contextMenuPosition = { x: event.clientX, y: event.clientY };
+    this.categoryToEdit = cat;
+    this.contextMenuOpen.set(true);
+  }
+
+  confirmDeleteCategory(id: number | null): void {
+    if (id === null) return;
+    this.categoryToDeleteId = id;
+    this.menuOpen.set(false);
+    this.contextMenuOpen.set(false);
+    this.showDeleteModal.set(true);
+  }
+
+  executeDeleteCategory(): void {
+    if (this.categoryToDeleteId === null) return;
+    
+    // moveNotes = false to delete the category and its notes
+    this.categoryService.deleteCategory(this.categoryToDeleteId, false).subscribe({
+      next: () => {
+        this.showDeleteModal.set(false);
+        this.categoryToDeleteId = null;
+        this.selectCategory(null); // Go back to general
+      },
+      error: () => {
+        this.showDeleteModal.set(false);
+      }
+    });
   }
 
   toggleConfig(): void {
