@@ -89,7 +89,7 @@ import { CommonModule } from '@angular/common';
               </div>
               <div class="category-info">
                 <div class="cat-top">
-                  <span class="cat-name">General / Sin clasificar</span>
+                  <span class="cat-name">Sin clasificar</span>
                 </div>
               </div>
             </div>
@@ -207,7 +207,7 @@ import { CommonModule } from '@angular/common';
           [style.position]="'fixed'"
           [style.left.px]="contextMenuPosition.x"
           [style.top.px]="contextMenuPosition.y"
-          style="z-index: 1000;"
+          style="z-index: 1000; right: auto; min-width: 180px;"
         >
           <button class="menu-item danger" (click)="confirmDeleteCategory(categoryToEdit.id)">
             <span class="menu-icon">🗑️</span>
@@ -237,7 +237,7 @@ import { CommonModule } from '@angular/common';
           [style.position]="'fixed'"
           [style.left.px]="noteContextMenuPosition.x"
           [style.top.px]="noteContextMenuPosition.y"
-          style="z-index: 1000; width: 170px; min-width: 170px;"
+          style="z-index: 1000; right: auto; width: 170px; min-width: 170px;"
         >
           <button class="menu-item" (click)="openEditNoteModal()">
             <span class="menu-icon">✏️</span>
@@ -282,7 +282,7 @@ import { CommonModule } from '@angular/common';
               <label class="category-checkbox-item">
                 <input type="checkbox" [checked]="selectedCategories.has(null)" (change)="toggleCategorySelection(null)">
                 <span class="cat-icon">📂</span>
-                <span>General / Sin clasificar</span>
+                <span>Sin clasificar</span>
               </label>
               
               <!-- Dynamic Categories -->
@@ -360,7 +360,8 @@ import { CommonModule } from '@angular/common';
     .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 130px; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 100; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); }
     .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: transparent; border: none; border-radius: 12px; color: var(--text-primary); font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.2s; width: 100%; }
     .menu-item:hover { background: var(--bg-selected); color: var(--text-accent); }
-    .menu-item.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .menu-item.danger { color: #ef4444; }
+    .menu-item.danger:hover { background: var(--bg-selected); color: #ef4444; }
 
     .chat-history { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
     .message-row { display: flex; width: 100%; justify-content: flex-end; }
@@ -548,7 +549,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   getActiveCategoryName(): string {
     const activeId = this.noteService.activeCategoryId();
-    if (activeId === null) return 'General / Sin clasificar';
+    if (activeId === null) return 'Sin clasificar';
     const cat = this.categoryService.categories().find(c => c.id === activeId);
     return cat ? cat.name : '';
   }
