@@ -174,7 +174,7 @@ import { AuthService } from '../../core/services/auth.service';
   `,
   styles: [`
     .profile-container {
-      min-height: 100vh;
+      height: 100vh;
       width: 100vw;
       display: flex;
       justify-content: center;
@@ -199,14 +199,12 @@ import { AuthService } from '../../core/services/auth.service';
     /* LAYOUT BASE (Desktop) */
     .wa-layout {
       width: 100%;
-      max-width: 1000px;
-      height: 80vh;
-      min-height: 500px;
-      max-height: 800px;
-      border-radius: 24px;
+      max-width: 1200px;
+      height: 100%;
+      max-height: 850px;
+      border-radius: 32px;
       border: 1px solid var(--border-card);
       box-shadow: var(--shadow-card);
-      background: var(--bg-form-card);
       display: flex;
       overflow: hidden;
       z-index: 10;
@@ -481,12 +479,12 @@ import { AuthService } from '../../core/services/auth.service';
     @media (max-width: 900px) {
       .hide-on-mobile { display: none !important; }
       
-      .profile-container { padding: 16px; align-items: flex-start; }
+      .profile-container { padding: 0; align-items: flex-start; }
       .wa-layout { 
         height: auto; 
         max-height: none; 
-        min-height: auto;
-        border-radius: 24px; 
+        min-height: 100vh;
+        border-radius: 0; 
         flex-direction: column; 
       }
       .wa-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }

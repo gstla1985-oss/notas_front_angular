@@ -331,8 +331,8 @@ import { CommonModule } from '@angular/common';
 
     /* Config / Settings panel */
     .config-wrapper { position: relative; padding: 0; border: none; }
-    .config-btn-icon { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; background: transparent; border: none; color: var(--accent-light); cursor: pointer; transition: all 0.2s; }
-    .config-btn-icon:hover, .config-btn-icon.active { background: var(--bg-selected); color: var(--accent); }
+    .config-btn-icon { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; background: transparent; border: none; color: var(--accent); opacity: 0.6; cursor: pointer; transition: all 0.2s; }
+    .config-btn-icon:hover, .config-btn-icon.active { background: var(--bg-selected); color: var(--accent); opacity: 1; }
     .config-btn-icon svg { transition: transform 0.3s; }
     .config-btn-icon.active svg { transform: rotate(45deg); }
     .config-panel { position: absolute; top: calc(100% + 10px); right: 0; width: 240px; border-radius: 18px; padding: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; z-index: 50; }
