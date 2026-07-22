@@ -331,7 +331,7 @@ import { CommonModule } from '@angular/common';
 
     /* Config / Settings panel */
     .config-wrapper { position: relative; padding: 0; border: none; }
-    .config-btn-icon { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+    .config-btn-icon { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; background: transparent; border: none; color: var(--accent-light); cursor: pointer; transition: all 0.2s; }
     .config-btn-icon:hover, .config-btn-icon.active { background: var(--bg-selected); color: var(--accent); }
     .config-btn-icon svg { transition: transform 0.3s; }
     .config-btn-icon.active svg { transform: rotate(45deg); }
